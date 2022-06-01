@@ -1,9 +1,12 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
+  protect_from_forgery :except => [:create]
+  wrap_parameters :user, include: [:email, :display_name, :password, :password_confirmation]
 
   # GET /users or /users.json
   def index
     @users = User.all
+    render json: {users: @users}
   end
 
   # GET /users/1 or /users/1.json
@@ -25,10 +28,10 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
-        format.html { redirect_to user_url(@user), notice: "User was successfully created." }
+        #format.html { redirect_to user_url(@user), notice: "User was successfully created." }
         format.json { render :show, status: :created, location: @user }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        #format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -37,11 +40,14 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1 or /users/1.json
   def update
     respond_to do |format|
-      if @user.update(user_params)
-        format.html { redirect_to user_url(@user), notice: "User was successfully updated." }
-        format.json { render :show, status: :ok, location: @user }
+      #old_password = :old_password
+      if User.find_by(params[:id], password_digest: :old_password)
+        if @user.update(user_params)
+          #format.html { redirect_to user_url(@user), notice: "User was successfully updated." }
+          format.json { render :show, status: :ok, location: @user }
+        end
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        #format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -65,6 +71,10 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.fetch(:user, {})
+      #params.fetch(:user, {})
+      params.require(:user).permit(:display_name, :email, :password, :password_confirmation)
+    end
+    def update_user_params
+      params.require(:user).permit(:display_name, :email, :old_password, :password, :password_confirmation)
     end
 end

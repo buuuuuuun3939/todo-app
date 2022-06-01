@@ -25,10 +25,10 @@ class SessionsController < ApplicationController
 
     respond_to do |format|
       if @session.save
-        format.html { redirect_to session_url(@session), notice: "Session was successfully created." }
+        #format.html { redirect_to session_url(@session), notice: "Session was successfully created." }
         format.json { render :show, status: :created, location: @session }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        #format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @session.errors, status: :unprocessable_entity }
       end
     end

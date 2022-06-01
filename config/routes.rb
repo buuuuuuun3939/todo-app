@@ -3,8 +3,7 @@ Rails.application.routes.draw do
   resources :tasks
   resources :sessions
   resources :users
-  get 'sessions/new'
-  get 'auth/new'
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
@@ -16,6 +15,9 @@ Rails.application.routes.draw do
   #patch "/users/:id", to: "users#update"
 
   # auth
+  get    'sessions/new'
+  get    'auth/new'
   post   "/auth", to: "sessions#create"
   delete "/auth", to: "sessions#destroy"
+  get    "/auth", to: "sessions#index"
 end
