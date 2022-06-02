@@ -14,15 +14,6 @@ require 'rails_helper'
 
 RSpec.describe "/users", type: :request do
   
-  # This should return the minimal set of attributes required to create a valid
-  # User. As you add validations to User, be sure to
-  # adjust the attributes here as well.
-  let(:valid_attributes) {
-  }
-
-  let(:invalid_attributes) {
-  }
-
   # ok
   describe "GET #index" do
     it "renders a successful response" do
@@ -71,26 +62,33 @@ RSpec.describe "/users", type: :request do
     #end
   end
 
-  #describe "PATCH /update" do
-  #  context "with valid parameters" do
-  #    let(:new_attributes) {
-  #      skip("Add a hash of attributes valid for your model")
-  #    }
+  describe "PATCH /update" do
+    context "with valid parameters" do
+      before do
+        old_info = '{ 
+                      display_name: "hoge",
+                      email: "hoge@gmail.com",
+                      password: "password", 
+                      password_confirmation: "password"
+                    }'
 
-  #    it "updates the requested user" do
-  #      user = User.create! valid_attributes
-  #      patch user_url(user), params: { user: new_attributes }
-  #      user.reload
-  #      skip("Add assertions for updated state")
-  #    end
+        update_info =  '{
+                          display_name: "hoge",
+                          email: "hoge@gmail.com",
+                          old_password: "password", 
+                          password: 1234567890,
+                          password_confirmation: 1234567890
+                        }'
+        post users_path, params: old_info, as: :json, headers: { 'Content-Type' => 'application/json' }
+      end
 
-  #    it "redirects to the user" do
-  #      user = User.create! valid_attributes
-  #      patch user_url(user), params: { user: new_attributes }
-  #      user.reload
-  #      expect(response).to redirect_to(user_url(user))
-  #    end
-  #  end
+      it "updates the requested user" do
+        expect {
+          patch users_path/1, params: old_info, as: :json, headers: { 'Content-Type' => 'application/json' } 
+          user.reload
+        }
+      end
+    end
 
   #  context "with invalid parameters" do
   #    it "renders a successful response (i.e. to display the 'edit' template)" do
@@ -99,5 +97,5 @@ RSpec.describe "/users", type: :request do
   #      expect(response).to be_successful
   #    end
   #  end
-  #end
+  end
 end
