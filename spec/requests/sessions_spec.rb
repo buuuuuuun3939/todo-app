@@ -12,120 +12,41 @@ require 'rails_helper'
 # of tools you can use to make these specs even more expressive, but we're
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
-RSpec.describe "/sessions", type: :request do
-  
-  # This should return the minimal set of attributes required to create a valid
-  # Session. As you add validations to Session, be sure to
-  # adjust the attributes here as well.
-  let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
-  }
-
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
-
-  describe "GET /index" do
-    it "renders a successful response" do
-      Session.create! valid_attributes
-      get sessions_url
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /show" do
-    it "renders a successful response" do
-      session = Session.create! valid_attributes
-      get session_url(session)
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /new" do
-    it "renders a successful response" do
-      get new_session_url
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /edit" do
-    it "renders a successful response" do
-      session = Session.create! valid_attributes
-      get edit_session_url(session)
-      expect(response).to be_successful
-    end
-  end
-
-  describe "POST /create" do
+RSpec.describe "Sessions", type: :request do
+  describe "POST /auth" do
+    # ok
     context "with valid parameters" do
       it "creates a new Session" do
+        user = FactoryBot.create(:user) 
         expect {
-          post sessions_url, params: { session: valid_attributes }
-        }.to change(Session, :count).by(1)
-      end
-
-      it "redirects to the created session" do
-        post sessions_url, params: { session: valid_attributes }
-        expect(response).to redirect_to(session_url(Session.last))
+          post auth_path, params: { session: {email: user.email, password: user.password } }
+        }.to change(User, :count).by(0) # SessionDBを作ってるわけじゃないからuserの数が増えてないことを確認する
+        expect(session[:user_id]).to eq(user.id)
       end
     end
 
-    context "with invalid parameters" do
-      it "does not create a new Session" do
-        expect {
-          post sessions_url, params: { session: invalid_attributes }
-        }.to change(Session, :count).by(0)
-      end
-
-      it "renders a successful response (i.e. to display the 'new' template)" do
-        post sessions_url, params: { session: invalid_attributes }
-        expect(response).to be_successful
-      end
-    end
+  #  context "with invalid parameters" do
+  #    it "does not create a new Session" do
+  #      user = FactoryBot.create(:user) 
+  #      expect {
+  #        post sessions_url, params: { session: {email: "", password: user.password } }
+  #      }.to change(User, :count).by(0)
+        #expect(session[:user_id]).to eq(user.id)
+  #    end
+  #  end
   end
 
-  describe "PATCH /update" do
-    context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
-      it "updates the requested session" do
-        session = Session.create! valid_attributes
-        patch session_url(session), params: { session: new_attributes }
-        session.reload
-        skip("Add assertions for updated state")
-      end
-
-      it "redirects to the session" do
-        session = Session.create! valid_attributes
-        patch session_url(session), params: { session: new_attributes }
-        session.reload
-        expect(response).to redirect_to(session_url(session))
-      end
+  describe "DELETE #destroy" do
+    before do
+      user = FactoryBot.create(:user)
+      post auth_path, params: { session: {email: user.email, password: user.password } }
     end
 
-    context "with invalid parameters" do
-      it "renders a successful response (i.e. to display the 'edit' template)" do
-        session = Session.create! valid_attributes
-        patch session_url(session), params: { session: invalid_attributes }
-        expect(response).to be_successful
-      end
-    end
-  end
-
-  describe "DELETE /destroy" do
     it "destroys the requested session" do
-      session = Session.create! valid_attributes
       expect {
-        delete session_url(session)
-      }.to change(Session, :count).by(-1)
-    end
-
-    it "redirects to the sessions list" do
-      session = Session.create! valid_attributes
-      delete session_url(session)
-      expect(response).to redirect_to(sessions_url)
+        delete auth_path
+        (session[:user_id]).to !eq(user.id) # 後で.to change()での実装方法を調べる。
+      }
     end
   end
 end

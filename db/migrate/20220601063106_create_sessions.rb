@@ -1,4 +1,5 @@
 class CreateSessions < ActiveRecord::Migration[7.0]
+  # Cookieを用いるから普通は不要
   def change
     create_table(:sessions, :options => 'ENGINE=InnoDB DEFAULT CHARSET=utf8') do |t|
       t.references :user, column: :id, null: false, foreign_key: true 

@@ -2,6 +2,8 @@ class ApplicationController < ActionController::API
   #protect_from_forgery with: :null_session
   include ActionController::MimeResponds
   include ActionController::RequestForgeryProtection
+  include ActionController::Flash
+  include ActionController::Cookies
   include SessionsHelper
   
   private

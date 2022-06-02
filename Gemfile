@@ -56,6 +56,12 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "shoulda-matchers"
   gem "annotate"
+  gem "device"
+  gem "spring-commands-rspec"
+  gem "rspec-queue"
+  gem "fuubar"
+  gem "pry-rails"
+  gem "faker"
 end
 
 group :development do
