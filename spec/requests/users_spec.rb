@@ -17,7 +17,6 @@ RSpec.describe "/users", type: :request do
   # ok
   describe "GET #index" do
     it "renders a successful response" do
-      #User.create! valid_attributes
       get users_url
       expect(response).to be_successful
     end
@@ -42,11 +41,6 @@ RSpec.describe "/users", type: :request do
         }.to change(User, :count).by(1)
       end
     end
-    #  it "redirects to the created user" do
-    #    post users_url, params: { user: valid_attributes }
-    #    expect(response).to redirect_to(user_url(User.last))
-    #  end
-    #end
 
     #context "with invalid parameters" do
     #  it "does not create a new User" do
@@ -90,12 +84,5 @@ RSpec.describe "/users", type: :request do
       end
     end
 
-  #  context "with invalid parameters" do
-  #    it "renders a successful response (i.e. to display the 'edit' template)" do
-  #      user = User.create! valid_attributes
-  #      patch user_url(user), params: { user: invalid_attributes }
-  #      expect(response).to be_successful
-  #    end
-  #  end
   end
 end

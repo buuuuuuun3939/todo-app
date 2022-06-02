@@ -1,7 +1,7 @@
 class TasksController < ApplicationController
-  #before_action :set_task, only: %i[ show edit update destroy ]
-  protect_from_forgery :except => [:create]
-  #wrap_parameters :tasks, include: [:name, :deadline, :create_user, :assignee_user, :public, :completed, :total_subtask_amount, :finished_subtask_amount]
+  before_action :logged_in_user, only: [:index, :show, :create, :update, :delete]
+  before_action :correct_user,   only: [:update, :delete]
+  protect_from_forgery :except => [:create, :update]
 
   # GET /tasks or /tasks.json
   def index
@@ -13,11 +13,6 @@ class TasksController < ApplicationController
     @task = Task.find(params[:task_id])
     render json: @task
   end
-
-  # GET /tasks/new
-  #def new
-  #  @task = Task.new
-  #end
 
   # POST /tasks or /tasks.json
   def create
@@ -45,23 +40,29 @@ class TasksController < ApplicationController
 
   # PATCH/PUT /tasks/1 or /tasks/1.json
   def update
-    respond_to do |format|
-      request_body = JSON.parse(request.body.read)
-      email = request_body[:name]
-      #print(email)
-      assignee_user = User.find(task_params[:assignee_email])
-      ignore_subtasks = {"name": task_params[:name], 
-                         "deadline": task_params[:deadline], 
-                         "create_user": task_params[:create_user], 
-                         "assignee_id": assignee_user[:user_id], 
-                         "public": task_params[:public]}
-      #print(ignore_subtasks)
-      #if @task.update(ignore_subtasks)
-      #  response.status = 200
-      #else
-      #  format.json { render json: @task.errors, status: :unprocessable_entity }
-      #end
-    end
+    @subtask = Subtask.find_by(task_id: params[:id]) 
+    @subtask.update(#id: task_params[:subtasks][:id],
+                    id: @subtask[:id],
+                    task_id: params[:id],
+                    description: task_params[:subtasks][0][:description],
+                    completed: 0 # ここはきちんとjsonを見て処理する必要がある
+                    #completed: task_params[:subtasks][0][:completed]
+    )
+    #@subtask.update
+
+    assignee_user = User.find_by(email: task_params[:assignee_email])
+    #print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
+    
+    #@task = Task.update(id: params[:id],
+    #                name: task_params[:name],
+    #                description: task_params[:description],
+    #                deadline: task_params[:deadline],
+    #                completed: 0, # サブタスクが全て完了したら1にする実装を行う必要がある
+    #                user_id: 1,   # ここはsessionで得たidを入れる必要がある
+    #                assignee_id: assignee_user[:id],
+    #                public: task_params[:public]
+    #)
+    #@task.save
   end
 
   # DELETE /tasks/1 or /tasks/1.json
@@ -71,14 +72,24 @@ class TasksController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    #def set_task
-    #  @task = Task.find(params[:id])
-    #end
-
     # Only allow a list of trusted parameters through.
     def task_params
       #params.fetch(:task, {})
       params.permit(:task, :description, :name, :deadline, :assignee_email, :public, subtasks:[:description]) 
+    end
+    
+     # beforeアクション
+    # ログイン済みユーザーかどうか確認
+    def logged_in_user
+      unless logged_in?
+        store_location
+      end
+    end
+   
+    # beforeアクション 
+    # 正しいユーザーかどうか確認
+    def correct_user
+      @user = User.find(params[:id])
+      #redirect_to(root_url) unless current_user?(@user)
     end
 end

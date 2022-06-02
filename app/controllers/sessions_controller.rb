@@ -1,23 +1,26 @@
 class SessionsController < ApplicationController
-  # GET /sessions or /sessions.json
+  
   def index
-    @sessions = Session.all
+    render json: session.to_hash
   end
 
   # POST /sessions or /sessions.json
   def create
     #binding.pry
-    user = User.find_by(email: params[:session][:email].downcase) #　downcaseをつけるとundefined method 'downcase'
-    if user && user.authenticate(params[:session][:password])
-      log_in user
-      #params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-
-    #else
-      #render 'new'
+    user = User.find_by(email: params[:email])
+    begin
+      if user && user.authenticate(params[:password])
+        log_in user
+        response.status = 201
+        render json: user.display_name
+      end
+    rescue
+      response.status = 400
+      render json: {message: "Bad request"}
     end
   end
 
-  # DELETE /sessions/1 or /sessions/1.json
+  # DELETE /sessions/
   def destroy
     #binding.pry
     log_out if logged_in?
@@ -26,7 +29,6 @@ class SessionsController < ApplicationController
   private
     # Only allow a list of trusted parameters through.
     def session_params
-      params.fetch(:session, {})
       params.permit(:email, :password, :id)
     end
 end

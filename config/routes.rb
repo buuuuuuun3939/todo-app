@@ -21,4 +21,5 @@ Rails.application.routes.draw do
 
   # task
   post   "/tasks", to: "tasks#create"
+  patch  "/tasks/:id", to: "tasks#update"
 end
