@@ -84,7 +84,7 @@ RSpec.describe "/users", type: :request do
 
       it "updates the requested user" do
         expect {
-          patch users_path/1, params: old_info, as: :json, headers: { 'Content-Type' => 'application/json' } 
+          patch users_path/1, params: update_info, as: :json, headers: { 'Content-Type' => 'application/json' } 
           user.reload
         }
       end
