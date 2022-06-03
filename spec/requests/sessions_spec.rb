@@ -13,27 +13,28 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "Sessions", type: :request do
-  describe "POST /auth" do
 
+  let(:new_user) { FactoryBot.create(:user)}
+  let(:login_params) {{ email: new_user[:email], password: new_user[:password] }}
+  
+  #let(:invalid_attributes) { FactoryBot.create(:user)}
+  
+  before do
+    post users_path params: new_user, as: :json, headers: { 'Content-Type' => 'application/json' }
+  end
+
+  describe "POST /auth" do
     context "with valid parameters" do
-      it "creates a new Session" do
-        # 事前にDBにユーザーを登録しておく必要があるから注意
-        login_params = {email: "fuga434@gmail.com", password: "password"}
+      example "新規セッションが作成される" do
         expect {
           post auth_path, params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
         }.to change(User, :count).by(0) # SessionDBを作ってるわけじゃないからuserの数が増えてないことを確認する
-        
-        # curlで確認するとSet-Cookieでsession_idは存在する。
-        # rspecでsession_idの存在がうまく確認できない。
-        expect {
-          expect(response).to be_successful
-          response.status eq 201 # 201以外でも何故かテストがパスする
-        }
-        #print(json: session[:user_id]) 
-        #expect(session[:user_id]).to eq(13)
-        #expect {print(session[:user_id])}
+        print(login_params)
       end
     end
+    context "with invalid parameters" do
+    end
+  end
 
   #  context "with invalid parameters" do
   #    it "does not create a new Session" do
@@ -44,18 +45,18 @@ RSpec.describe "Sessions", type: :request do
         #expect(session[:user_id]).to eq(user.id)
   #    end
   #  end
-  end
+  #end
 
-  describe "DELETE #destroy" do
-    before do
-      post auth_path, params: {email: "fuga@gmail.com", password: "password"}
-    end
+  #describe "DELETE #destroy" do
+  #  before do
+  #    post auth_path, params: {email: "fuga@gmail.com", password: "password"}
+  #  end
 
-    it "destroys the requested session" do
-      expect {
-        delete auth_path
-        (session[:user_id]).to !eq(user.id) # 後で.to change()での実装方法を調べる。
-      }
-    end
-  end
+  #  it "destroys the requested session" do
+  #    expect {
+  #      delete auth_path
+  #      (session[:user_id]).to !eq(user.id) # 後で.to change()での実装方法を調べる。
+  #    }
+  #  end
+  #end
 end
