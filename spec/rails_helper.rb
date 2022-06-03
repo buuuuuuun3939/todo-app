@@ -71,4 +71,6 @@ RSpec.configure do |config|
     # sessionメソッドを上書き
     #allow_any_instance_of(ActionDispatch::Request).to receive(:session).and_return(session)
   end
+  
+  config.include Rack::Test::Methods, type: :request
 end

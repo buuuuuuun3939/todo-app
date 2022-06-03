@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :rspec_session do
+  factory :login_user do
     {
       email: "hoge@gmail.com",
       password: "password1010" 

@@ -13,34 +13,34 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/users", type: :request do
-  
+
   # ok
   describe "GET #index" do
     it "renders a successful response" do
-      get users_url
+      get "/users"
       expect(response).to be_successful
     end
   end
 
   # ok
-  describe "GET #show" do
-    let(:id) {1}
-    it "renders a successful response" do
-      get users_url(id)
-      expect(response).to be_successful
-    end
-  end
+  #describe "GET #show" do
+  #  let(:id) {1}
+  #  it "renders a successful response" do
+  #    get users_url(id)
+  #    expect(response).to be_successful
+  #  end
+  #end
 
-  describe "POST #create" do
+  #describe "POST #create" do
     # ok
-    context "with valid parameters" do
-      it "creates a new User" do
-        request_body = {display_name:"hoge", email:"hoge@gmail.com", password:"password1010", password_confirmation:"password1010"}
-        expect {
-          post users_url, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
-        }.to change(User, :count).by(1)
-      end
-    end
+  #  context "with valid parameters" do
+  #    it "creates a new User" do
+        
+  #      expect {
+  #        post users_url, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+  #      }.to change(User, :count).by(1)
+  #    end
+  #  end
 
     #context "with invalid parameters" do
     #  it "does not create a new User" do
@@ -54,35 +54,33 @@ RSpec.describe "/users", type: :request do
     #    expect(response).to be_successful
     # end
     #end
-  end
+  #end
 
-  describe "PATCH /update" do
-    context "with valid parameters" do
-      before do
-        old_info = '{ 
-                      display_name: "hoge",
-                      email: "hoge@gmail.com",
-                      password: "password", 
-                      password_confirmation: "password"
-                    }'
+  #describe "PATCH /update" do
+  #  context "with valid parameters" do
+  #    before do
+  #      old_info = '{ 
+  #                    display_name: "hoge",
+  #                    email: "hoge@gmail.com",
+  #                    password: "password", 
+  #                    password_confirmation: "password"
+  #                  }'
 
-        update_info =  '{
-                          display_name: "hoge",
-                          email: "hoge@gmail.com",
-                          old_password: "password", 
-                          password: 1234567890,
-                          password_confirmation: 1234567890
-                        }'
-        post users_path, params: old_info, as: :json, headers: { 'Content-Type' => 'application/json' }
-      end
+  #      update_info =  '{
+  #                        display_name: "hoge",
+  #                        email: "hoge@gmail.com",
+  #                        old_password: "password", 
+  #                        password: 1234567890,
+  #                        password_confirmation: 1234567890
+  #                      }'
+  #      post users_path, params: old_info, as: :json, headers: { 'Content-Type' => 'application/json' }
+  #    end
 
-      it "updates the requested user" do
-        expect {
-          patch users_path/1, params: update_info, as: :json, headers: { 'Content-Type' => 'application/json' } 
-          user.reload
-        }
-      end
-    end
-
-  end
+  #    it "updates the requested user" do
+  #      expect {
+  #        patch users_path/1, params: update_info, as: :json, headers: { 'Content-Type' => 'application/json' } 
+  #        user.reload
+  #      }
+  #    end
+  #  end
 end

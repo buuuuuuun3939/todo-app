@@ -14,24 +14,21 @@ require 'rails_helper'
 
 RSpec.describe "Sessions", type: :request do
   describe "POST /auth" do
-
     context "with valid parameters" do
+      let(:user1) {FactoryBot.create(:user)}
+      #get users_path, params: user1, headers: { 'Content-Type' => 'application/json' }
+      #get user_path
+
       it "creates a new Session" do
-        # 事前にDBにユーザーを登録しておく必要があるから注意
-        login_params = {email: "fuga434@gmail.com", password: "password"}
         expect {
-          post auth_path, params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
+          post auth_path, params: :user1, as: :json, headers: { 'Content-Type' => 'application/json' }
         }.to change(User, :count).by(0) # SessionDBを作ってるわけじゃないからuserの数が増えてないことを確認する
-        
-        # curlで確認するとSet-Cookieでsession_idは存在する。
-        # rspecでsession_idの存在がうまく確認できない。
         expect {
+          session.to_hash
           expect(response).to be_successful
-          response.status eq 201 # 201以外でも何故かテストがパスする
+          #render session[:user_id]
+          #response.status eq 201 # 201以外でも何故かテストがパスする
         }
-        #print(json: session[:user_id]) 
-        #expect(session[:user_id]).to eq(13)
-        #expect {print(session[:user_id])}
       end
     end
 
