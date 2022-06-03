@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   resources :subtasks
   #resources :tasks
   #resources :sessions
-  resources :users
+  #resources :users
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -10,8 +10,8 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   # user
-  #get   "/users",     to: "users#index"   
-  #post  "/users",     to: "users#create"   
+  get   "/users",     to: "users#index"   
+  post  "/users",     to: "users#create"   
   #patch "/users/:id", to: "users#update"
 
   # auth
