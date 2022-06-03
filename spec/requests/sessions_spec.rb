@@ -25,6 +25,7 @@ RSpec.describe "Sessions", type: :request do
         
         # curlで確認するとSet-Cookieでsession_idは存在する。
         # rspecでsession_idの存在がうまく確認できない。
+        # shoulda-matchersで本当は書くべきなのかも。
         expect {
           expect(response).to be_successful
           response.status eq 201 # 201以外でも何故かテストがパスする
