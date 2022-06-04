@@ -15,61 +15,85 @@ require 'rails_helper'
 RSpec.describe "/users", type: :request do
   
   # ok
-  #describe "GET #index" do
-  #  example "200が返却される" do
-  #    expect {
-  #      get users_path
-  #      response.to be_successful
-  #      response.to have_http_status 200
-  #    }
-  #  end
-  #end
+  describe "GET #index" do
+    example "200が返却される" do
+      expect {
+        get users_path
+        response.to be_successful
+        response.to have_http_status 200
+      }
+    end
+  end
 
-  # ok
-  #describe "GET #show" do
-  #  let(:id) {1}
-  #  example "200が返却される" do
-  #    expect {
-  #      get users_path(id)
-  #      response.to be_successful
-  #      response.to have_http_status 200
-  #    }
-  #  end
-  #end
+  # ログイン後かをテストする必要がある
+  describe "GET #show" do
+    let(:id) {1}
+    example "200が返却される" do
+      expect {
+        get users_path(id)
+        response.to be_successful
+        response.to have_http_status 200
+      }
+    end
+  end
 
   describe "POST #create" do
     # ok
     context "with valid parameters" do
-      it "creates a new User" do
-        
+      it "creates a new User" do 
         # ちゃんとFactoryBotで書きたい
-        request_body = {display_name: "fuga4342", email: "fuga434@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
+        request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
         #binding.pry
         expect {
           post users_path params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
         }.to change(User, :count).by(1)
-        #expect {
-        #  response.to be_successful
-        #  response.to have_http_status 201
-        #  session[:user_id].not_to eq nil #本来ならここでsession_idが返ってきているはず
+        expect {
+          response.to be_successful
+          response.to have_http_status 201
+          session[:user_id].not_to eq nil #本来ならここでsession_idが返ってきているはず
           #print(session[:user_id])
-        #}
+        }
       end
     end
-    #context "with invalid parameters" do
-    #  it "does not create a new User" do
-        # ちゃんとFactoryBotで書きたい
-        # passwordが違うからアカウントは作成できないはず
-    #    request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "password", password_confirmation: "password1010"}
-    #    expect {
-    #       post users_path, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
-    #    }.to change(User, :count).by(0)
-    #    expect {
-    #      response.not_to be_successful
-    #      response.to have_http_status 400
-    #    }
-    #  end
-    #end
+    context "with a invalid password" do
+      context "not enough a upper case" do
+        example "ユーザー作成に失敗する" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "password1", password_confirmation: "password1"}
+          
+          expect {
+            post users_path params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(0)
+          expect {
+            response.not_to be_successful
+            response.to have_http_status 400
+          }
+        end
+      end
+      context "not enough a number" do
+        example "ユーザー作成に失敗する" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Password", password_confirmation: "Password"}
+          expect {
+            post users_path, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(0)
+          expect {
+            response.not_to be_successful
+            response.to have_http_status 400
+          }
+        end
+      end
+      context "not enough length" do
+        example "ユーザー作成に失敗する" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0r", password_confirmation: "Passw0r"}
+          expect {
+            post users_path, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(0)
+          expect {
+            response.not_to be_successful
+            response.to have_http_status 400
+          } 
+        end
+      end
+    end
   end
 
   #describe "PATCH /update" do

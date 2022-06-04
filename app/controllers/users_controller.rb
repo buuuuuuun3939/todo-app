@@ -16,7 +16,7 @@ class UsersController < ApplicationController
   # POST /users or /users.json
   def create
     @user = User.new(user_params)
-    binding.pry
+    #binding.pry
     if @user.save # DBにuserを保存
       log_in(@user)
       #response.status = 201

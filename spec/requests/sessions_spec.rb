@@ -47,20 +47,20 @@ RSpec.describe "Sessions", type: :request do
   #  end
   #end
 
-  describe "DELETE #destroy" do
-    let(:rspec_session) {{ user_id: 1}}
-    it "destroys the requested session" do
+  #describe "DELETE #destroy" do
+  #  let(:rspec_session) {{ user_id: 1}}
+  #  it "destroys the requested session" do
       
       # 準備としてユーザーを新規に作成
-      request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
-      post users_url, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
-      json ||= JSON.parse(last_response.body)
-        print(json)
+  #    request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
+  #    post users_url, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+  #    json ||= JSON.parse(last_response.body)
+  #      print(json)
       
-      login_params = {email: "hoge@gmail.com", password: "1passworD"}
-      post auth_path, params: login_params
-      json ||= JSON.parse(last_response.body)
-        print(json)
+  #    login_params = {email: "hoge@gmail.com", password: "1passworD"}
+  #    post auth_path, params: login_params
+  #    json ||= JSON.parse(last_response.body)
+  #      print(json)
 
       #with_session(:user_1) do
       #  delete auth_path
@@ -69,7 +69,7 @@ RSpec.describe "Sessions", type: :request do
         #login_params = {email: "hoge@gmail.com", password: "1passworD"}
       #  json ||= JSON.parse(last_response.body)
       #  print(json)
-      end
+  #    end
 
       #print(response.headers)
       #page.get_rack_session(user_id: 1)
@@ -88,6 +88,6 @@ RSpec.describe "Sessions", type: :request do
         #(session[:user_id]).to !eq(user.id) # 後で.to change()での実装方法を調べる。
         #(response.get_rack_session_key('user_id').nil?)  
       #}
-    end
-  end
+  #  end
+  #end
 end
