@@ -15,52 +15,62 @@ require 'rails_helper'
 RSpec.describe "/users", type: :request do
   
   # ok
-  describe "GET #index" do
-    example "200が返却される" do
-      get users_path
-      expect {
-        expect(response).to be_successful
-        expect(response).to have_http_status 200
-      }
-    end
-  end
+  #describe "GET #index" do
+  #  example "200が返却される" do
+  #    expect {
+  #      get users_path
+  #      response.to be_successful
+  #      response.to have_http_status 200
+  #    }
+  #  end
+  #end
 
   # ok
-  describe "GET #show" do
-    let(:id) {1}
-    example "200が返却される" do
-      get users_path(id)
-      expect {
-        response.to be_successful
-        response.to have_http_status 200
-      }
-    end
-  end
-
-  #describe "POST #create" do
-    # ok
-  #  context "with valid parameters" do
-  #    it "creates a new User" do
-  #      request_body = {display_name:"hoge", email:"hoge@gmail.com", password:"password1010", password_confirmation:"password1010"}
-  #      expect {
-  #        post users_url, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
-  #      }.to change(User, :count).by(1)
-  #    end
+  #describe "GET #show" do
+  #  let(:id) {1}
+  #  example "200が返却される" do
+  #    expect {
+  #      get users_path(id)
+  #      response.to be_successful
+  #      response.to have_http_status 200
+  #    }
   #  end
+  #end
 
+  describe "POST #create" do
+    # ok
+    context "with valid parameters" do
+      it "creates a new User" do
+        
+        # ちゃんとFactoryBotで書きたい
+        request_body = {display_name: "fuga4342", email: "fuga434@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
+        #binding.pry
+        expect {
+          post users_path params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+        }.to change(User, :count).by(1)
+        #expect {
+        #  response.to be_successful
+        #  response.to have_http_status 201
+        #  session[:user_id].not_to eq nil #本来ならここでsession_idが返ってきているはず
+          #print(session[:user_id])
+        #}
+      end
+    end
     #context "with invalid parameters" do
     #  it "does not create a new User" do
+        # ちゃんとFactoryBotで書きたい
+        # passwordが違うからアカウントは作成できないはず
+    #    request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "password", password_confirmation: "password1010"}
     #    expect {
-    #      post users_url, params: { user: invalid_attributes }
+    #       post users_path, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
     #    }.to change(User, :count).by(0)
+    #    expect {
+    #      response.not_to be_successful
+    #      response.to have_http_status 400
+    #    }
     #  end
-
-    #  it "renders a successful response (i.e. to display the 'new' template)" do
-    #    post users_url, params: { user: invalid_attributes }
-    #    expect(response).to be_successful
-    # end
     #end
-  #end
+  end
 
   #describe "PATCH /update" do
   #  context "with valid parameters" do

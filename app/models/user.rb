@@ -15,10 +15,10 @@ class User < ApplicationRecord
   #end
 
   # Validation Settings
-  #VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  #VALID_PASSWORD_REGEX = /\A(?=.*?[a-z])(?=.*?[A-Z])+\z/
-  #validates :email, presence: true, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX },
-  #          uniqueness: { case_sensitive: false }, allow_nil: false
-  #validates :password, presence: true, length: { minimum: 8 }, format: { with: VALID_PASSWORD_REGEX }, 
-  #          allow_nil: false, confirmation: true
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}\z/
+  validates :email, presence: true, format: { with: VALID_EMAIL_REGEX },
+             allow_nil: false #uniqueness: { case_sensitive: false }
+  validates :password, presence: true, length: { minimum: 8 }, format: { with: VALID_PASSWORD_REGEX }, 
+            allow_nil: false, confirmation: true
 end

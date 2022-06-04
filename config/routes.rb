@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # auth
   post   "/auth", to: "sessions#create"
   delete "/auth", to: "sessions#destroy"
-  get    "/auth", to: "sessions#index"
+  #get    "/auth", to: "sessions#index"
 
   # task
   post   "/tasks", to: "tasks#create"

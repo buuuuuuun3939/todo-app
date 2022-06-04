@@ -16,12 +16,13 @@ class UsersController < ApplicationController
   # POST /users or /users.json
   def create
     @user = User.new(user_params)
-
-    begin
-      @user.save
-      response.status = 201
+    binding.pry
+    if @user.save # DBにuserを保存
+      log_in(@user)
+      #response.status = 201
       render json: @user.display_name
-    rescue
+    else
+      response.status = 400
       render json: {message: "save error."}
     end
   end
@@ -42,11 +43,11 @@ class UsersController < ApplicationController
   private
     # Only allow a list of trusted parameters through.
     def user_params
-      params.permit(:user, :id, :display_name, :email, :password, :password_confirmation)
+      params.permit(:display_name, :email, :password, :password_confirmation)
     end
-    def update_user_params
-      params.require(:user).permit(:display_name, :email, :old_password, :password, :password_confirmation)
-    end
+    #def update_user_params
+    #  params.require(:user).permit(:display_name, :email, :old_password, :password, :password_confirmation)
+    #end
     
     # beforeアクション
     # ログイン済みユーザーかどうか確認
@@ -60,6 +61,5 @@ class UsersController < ApplicationController
     # 正しいユーザーかどうか確認
     def correct_user
       @user = User.find(params[:id])
-      #redirect_to(root_url) unless current_user?(@user)
     end
 end

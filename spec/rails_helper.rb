@@ -62,13 +62,29 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
+  config.include FactoryBot::Syntax::Methods
+
   # テストケース共通の事前処理
   config.before(:each) do
-    #let(:rspec_session) { Session.new(name: 'Taro', email: 'taro@example.com') }
+    # ユーザーを新規に登録する
+    #sample_user = { FactoryBot.create(:user) }
+    # FactoryBotで生成したuserのpasswordが何故かnilになるので入れる
+    #sample_user[:password] = "password"
+    #sample_user[:password_confirmation] = "password"
+    #post users_path parames: user 
+    
+    #rspec_session = Session.create(params{{email: user.email, password: user.password}})
+    
     # let(:rspec_session) で指定された値を セッションの初期値とします
-    session = defined?(rspec_session) ? rspec_session : {}
+    #session = defined?(rspec_session) ? rspec_session : {}
 
-    # sessionメソッドを上書き
+    # destroyメソッド実行時にエラーを吐かないようにする
+    #session.class_eval { def destroy; nil; end }
+
+    # sessionメソッドを上書きする
     #allow_any_instance_of(ActionDispatch::Request).to receive(:session).and_return(session)
   end
+
+  config.include Rack::Test::Methods, type: :request
+  config.include Devise::Test::IntegrationHelpers, type: :system
 end

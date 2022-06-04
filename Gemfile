@@ -54,6 +54,7 @@ group :development, :test do
   gem "bcrypt"
   gem "rspec-rails"
   gem "factory_bot_rails"
+  #gem "factory_bot"
   gem "shoulda-matchers"
   gem "annotate"
   gem "device"
@@ -62,6 +63,8 @@ group :development, :test do
   gem "fuubar"
   gem "pry-rails"
   gem "faker"
+  gem "devise"
+  gem "rack_session_access"
 end
 
 group :development do
