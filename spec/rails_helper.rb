@@ -67,14 +67,12 @@ RSpec.configure do |config|
   # テストケース共通の事前処理
   config.before(:each) do
     # ユーザーを新規に登録する
-    #sample_user = { FactoryBot.create(:user) }
-    # FactoryBotで生成したuserのpasswordが何故かnilになるので入れる
-    #sample_user[:password] = "password"
-    #sample_user[:password_confirmation] = "password"
-    #post users_path parames: user 
-    
-    #rspec_session = Session.create(params{{email: user.email, password: user.password}})
-    
+    #user1 = {display_name: "sample_user1", email: "user1@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"} 
+    #post users_path, params: user1, as: :json, headers: { 'Content-Type' => 'application/json' }
+    #user1_params = {email: "user1@gmail.com", password: "Passw0rd"}
+
+    #rspec_session = Session.create(params{{email: user1.email, password: user1.password}})
+    #rspec_session = Session.create(params: user1_params)
     # let(:rspec_session) で指定された値を セッションの初期値とします
     #session = defined?(rspec_session) ? rspec_session : {}
 
@@ -85,6 +83,6 @@ RSpec.configure do |config|
     #allow_any_instance_of(ActionDispatch::Request).to receive(:session).and_return(session)
   end
 
-  config.include Rack::Test::Methods, type: :request
+  #config.include Rack::Test::Methods, type: :request # includeしたらauth#createのresponseがnilになってしまった。
   config.include Devise::Test::IntegrationHelpers, type: :system
 end

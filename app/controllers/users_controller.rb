@@ -18,8 +18,8 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     #binding.pry
     if @user.save # DBにuserを保存
-      log_in(@user)
-      #response.status = 201
+      #log_in(@user)
+      response.status = 201
       render json: @user.display_name
     else
       response.status = 400

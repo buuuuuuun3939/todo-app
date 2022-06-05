@@ -19,33 +19,58 @@ RSpec.describe "Sessions", type: :request do
     context "with valid parameters" do
       example "新規セッションが作成され、ログインできる" do
         # 準備としてユーザーを新規に作成
-        request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
-        post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+        request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+        expect {
+          post users_path params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+        }.to change(User, :count).by(1)
+        
+        login_params = {email: "sample@gmail.com", password: "Passw0rd"}
+        expect {
+          post auth_path params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
+        }.to change(User, :count).by(0) # userを作ってるわけじゃないからuserの数が増えてないことを確認する
+        expect(response).to have_http_status 201
+        expect(response.body).to include("sample_user")
 
-        login_params = {email: "hoge@gmail.com", password: "1passworD"}
-        expect {
-          post auth_path, params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
-        }.to change(User, :count).by(0) # SessionDBを作ってるわけじゃないからuserの数が増えてないことを確認する
-        expect {
-          response.to have_http_status 201
-          response.to include("session_id")
-        }
+        # 以下はなぜか値を変えてもテストが通る
+        #expect {
+        #  response.to have_http_status 201  
+        #  response.to include("session_id")
+        #}
       end
     end
-    #context "with invalid parameters" do
-    #end
+    context "with invalid parameters" do
+      context "invalid email" do
+        example "新規セッションが作成されず、ログインできない" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+          expect {
+            post users_path params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(1)
+        
+          login_params = {email: "hoge@gmail.com", password: "Passw0rd"}
+          expect {
+            post auth_path params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(0) # userを作ってるわけじゃないからuserの数が増えてないことを確認する
+          expect(response).to have_http_status 400
+          expect(response.body).not_to include("sample_user")
+        end
+      end
+      context "invalid password" do
+        example "新規セッションが作成されず、ログインできない" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+          expect {
+            post users_path params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(1)
+        
+          login_params = {email: "sample@gmail.com", password: "Passw0rd_hoge"}
+          expect {
+            post auth_path params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(0) # userを作ってるわけじゃないからuserの数が増えてないことを確認する
+          expect(response).to have_http_status 400
+          expect(response.body).not_to include("sample_user")
+        end
+      end
+    end
   end
-
-  #  context "with invalid parameters" do
-  #    it "does not create a new Session" do
-  #      user = FactoryBot.create(:user) 
-  #      expect {
-  #        post sessions_url, params: { session: {email: "", password: user.password } }
-  #      }.to change(User, :count).by(0)
-        #expect(session[:user_id]).to eq(user.id)
-  #    end
-  #  end
-  #end
 
   #describe "DELETE #destroy" do
   #  let(:rspec_session) {{ user_id: 1}}

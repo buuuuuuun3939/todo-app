@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :tasks, foreign_key: "id", dependent: :destroy 
+  #has_one :session # 追記
 
   # 渡された文字列のハッシュ値を返す
   def User.digest(string)
