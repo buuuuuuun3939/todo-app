@@ -40,7 +40,7 @@ class UsersController < ApplicationController
         end
       else
         response.status = 401
-        render json: {"message": "auth error"}
+        render json: {message: "auth error"}
       end
     end
   end

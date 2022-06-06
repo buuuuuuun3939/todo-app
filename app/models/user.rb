@@ -10,11 +10,6 @@ class User < ApplicationRecord
     BCrypt::Password.create(string, cost: cost)
   end
 
-  # 渡されたold_passwordがusersテーブル内のpassword_digestと一致したらtrueを返す
-  #def existed_old_password?(string)
-  #  BCrypt::Password.new(remember_digest).is_password?(remember_token)
-  #end
-
   # Validation Settings
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}\z/

@@ -29,38 +29,51 @@ class TasksController < ApplicationController
   def create
     # assignee_emailを基にuserのidを特定してassignee_idとする
     assignee_user = User.find_by(email: task_params[:assignee_email])
-    #print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
+    print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
     
-    if {@task = Task.new(name: task_params[:name],
+    @task = Task.new(name: task_params[:name],
                      description: task_params[:description],
                      deadline: task_params[:deadline],
-                     completed: 0, # タスク生成時は必ず未完了状態である
-                     user_id: 1,   # ここはsessionで得たidを入れる必要がある
+                     completed: 0,                 # タスク生成時は必ず未完了状態であるから"0"
+                     user_id: session[:user_id],   # ここはsessionで得たidを入れる必要がある
                      assignee_id: assignee_user[:id],
                      public: task_params[:public]
-    )}
-      @task.save
-    end
-    @subtask = Subtask.new(task_id: @task[:id],
-                           description: task_params[:description],
-                           completed: 0 # サブタスク生成時は必ず未完了状態である 
     )
-    @subtask.save
+    if @task.save
+      print(Task.last[:id])
+    end
+    @subtask =  Subtask.new(task_id: Task.last[:id],
+                            description: task_params[:description],
+                            completed: 0 # サブタスク生成時は必ず未完了状態である 
+    )
+
+    if @subtask.save
+      binding.pry
+      response.status = 201
+      render json: {message: "success message"}
+    end
+
+
+    #@subtask = Subtask.new(task_id: @task[:id],
+    #                       description: task_params[:description],
+    #                       completed: 0 # サブタスク生成時は必ず未完了状態である 
+    #)
+    #@subtask.save
   end
 
   # PATCH/PUT /tasks/1 or /tasks/1.json
-  def update
-    @subtask = Subtask.find_by(task_id: params[:id]) 
-    @subtask.update(#id: task_params[:subtasks][:id],
-                    id: @subtask[:id],
-                    task_id: params[:id],
-                    description: task_params[:subtasks][0][:description],
-                    completed: 0 # ここはきちんとjsonを見て処理する必要がある
+  #def update
+  #  @subtask = Subtask.find_by(task_id: params[:id]) 
+  #  @subtask.update(#id: task_params[:subtasks][:id],
+  #                  id: @subtask[:id],
+  #                  task_id: params[:id],
+  #                  description: task_params[:subtasks][0][:description],
+  #                  completed: 0 # ここはきちんとjsonを見て処理する必要がある
                     #completed: task_params[:subtasks][0][:completed]
-    )
+  #  )
     #@subtask.update
 
-    assignee_user = User.find_by(email: task_params[:assignee_email])
+ #   assignee_user = User.find_by(email: task_params[:assignee_email])
     #print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
     
     #@task = Task.update(id: params[:id],
@@ -73,20 +86,21 @@ class TasksController < ApplicationController
     #                public: task_params[:public]
     #)
     #@task.save
-  end
+  #end
 
   # DELETE /tasks/1 or /tasks/1.json
-  def destroy
-    if @task = Task.find_by(params[:task_id])
-      @task.destroy # とりあえず削除できるけど、タスク作成者をきちんと確認する実装が必要
-    end
-  end
+  #def destroy
+  #  if @task = Task.find_by(params[:task_id])
+  #    @task.destroy # とりあえず削除できるけど、タスク作成者をきちんと確認する実装が必要
+  #  end
+  #end
 
   private
     # Only allow a list of trusted parameters through.
     def task_params
       params.permit(:description, :name, :deadline, :assignee_email, :public, subtasks:[:description]) 
     end
+
     
      # beforeアクション
     # ログイン済みユーザーかどうか確認

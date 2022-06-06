@@ -8,7 +8,6 @@ class SessionsController < ApplicationController
     
     if user && user.authenticate(session_params[:password])
       log_in user
-      #binding.pry
       response.status = 201
       render json: user.display_name
     else
@@ -19,9 +18,6 @@ class SessionsController < ApplicationController
 
   # DELETE /sessions/
   def destroy
-    #binding.pry
-    #log_out if logged_in?
-    
     if logged_in?
       log_out
       response.status = 204
