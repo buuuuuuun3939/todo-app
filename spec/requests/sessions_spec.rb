@@ -72,47 +72,45 @@ RSpec.describe "Sessions", type: :request do
     end
   end
 
-  #describe "DELETE #destroy" do
-  #  let(:rspec_session) {{ user_id: 1}}
-  #  it "destroys the requested session" do
-      
-      # 準備としてユーザーを新規に作成
-  #    request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
-  #    post users_url, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
-  #    json ||= JSON.parse(last_response.body)
-  #      print(json)
-      
-  #    login_params = {email: "hoge@gmail.com", password: "1passworD"}
-  #    post auth_path, params: login_params
-  #    json ||= JSON.parse(last_response.body)
-  #      print(json)
+  describe "DELETE #destroy" do
+    #let(:rspec_session) {{ user_id: 1}}
+    context "a delete request with session" do
+      example "セッションが削除され、ログアウトする" do
+        
+        # 準備としてユーザーを新規に作成
+        request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+        expect {
+          post users_path params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+        }.to change(User, :count).by(1)
 
-      #with_session(:user_1) do
-      #  delete auth_path
-        #request_body = {display_name: "hoge", email: "hoge@gmail.com", password: "1passworD", password_confirmation: "1passworD"}
-        #post users_url, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
-        #login_params = {email: "hoge@gmail.com", password: "1passworD"}
-      #  json ||= JSON.parse(last_response.body)
-      #  print(json)
-  #    end
+        login_params = {email: "sample@gmail.com", password: "Passw0rd"}
+        expect {
+          post auth_path params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
+        }.to change(User, :count).by(0) # userを作ってるわけじゃないからuserの数が増えてないことを確認する
+        
+        delete auth_path
+        expect(response).to have_http_status 204
+      end
+    end
+    context "a request without session" do
+      example "セッションが削除されず、ログインされない" do
+       # 準備としてユーザーを新規に作成
+       request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+       expect {
+         post users_path params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+       }.to change(User, :count).by(1)
 
-      #print(response.headers)
-      #page.get_rack_session(user_id: 1)
-      
-      #print(response.cookies)
-      #delete auth_path headers: response.cookies
-      #print(response.headers)
-      #print("\n")
-      #print(request_body)
-      #print("\n")
-      #print(response.status)
-      #expect {
-        #print(response.headers)
-        #response.to be_successful
-        #response.to have_http_status 201
-        #(session[:user_id]).to !eq(user.id) # 後で.to change()での実装方法を調べる。
-        #(response.get_rack_session_key('user_id').nil?)  
-      #}
-  #  end
-  #end
+       login_params = {email: "sample@gmail.com", password: "Passw0rd"}
+       expect {
+         post auth_path params: login_params, as: :json, headers: { 'Content-Type' => 'application/json' }
+       }.to change(User, :count).by(0) # userを作ってるわけじゃないからuserの数が増えてないことを確認する
+
+       # delete requestのときにsessionを削除してrequestする実装方法を調べる
+       #session[:user_id] = nil
+       #Capybara.reset_sessions! # うまく動かない
+       #delete auth_path
+       #expect(response).to have_http_status 401 
+      end
+    end
+  end
 end

@@ -17,11 +17,9 @@ RSpec.describe "/users", type: :request do
   # ok
   describe "GET #index" do
     example "200が返却される" do
-      expect {
-        get users_path
-        response.to be_successful
-        response.to have_http_status 200
-      }
+      get users_path
+      expect(response).to be_successful
+      expect(response).to have_http_status 200
     end
   end
 
@@ -29,30 +27,25 @@ RSpec.describe "/users", type: :request do
   describe "GET #show" do
     let(:id) {1}
     example "200が返却される" do
-      expect {
-        get users_path(id)
-        response.to be_successful
-        response.to have_http_status 200
-      }
+      get users_path(id)
+      expect(response).to be_successful
+      expect(response).to have_http_status 200
     end
   end
 
   describe "POST #create" do
     # ok
     context "with valid parameters" do
-      it "creates a new User" do 
+      example "ユーザー作成に成功する" do 
         # ちゃんとFactoryBotで書きたい
         request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
-        #binding.pry
+
         expect {
-          post users_path params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+          post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
         }.to change(User, :count).by(1)
-        expect {
-          response.to be_successful
-          response.to have_http_status 201
-          session[:user_id].not_to eq nil #本来ならここでsession_idが返ってきているはず
-          #print(session[:user_id])
-        }
+        expect(response).to be_successful
+        expect(response).to have_http_status 201
+        expect(session[:user_id]).not_to eq nil #本来ならここでsession_idが返ってきているはず
       end
     end
     context "with a invalid password" do
@@ -61,67 +54,125 @@ RSpec.describe "/users", type: :request do
           request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "password1", password_confirmation: "password1"}
           
           expect {
-            post users_path params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+            post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
           }.to change(User, :count).by(0)
-          expect {
-            response.not_to be_successful
-            response.to have_http_status 400
-          }
+          expect(response).not_to be_successful
+          expect(response).to have_http_status 400
         end
       end
       context "not enough a number" do
         example "ユーザー作成に失敗する" do
           request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Password", password_confirmation: "Password"}
+          
           expect {
-            post users_path, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+            post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
           }.to change(User, :count).by(0)
-          expect {
-            response.not_to be_successful
-            response.to have_http_status 400
-          }
+          expect(response).not_to be_successful
+          expect(response).to have_http_status 400
         end
       end
       context "not enough length" do
         example "ユーザー作成に失敗する" do
           request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0r", password_confirmation: "Passw0r"}
+          
           expect {
-            post users_path, params: (request_body), as: :json, headers: { 'Content-Type' => 'application/json' }
+            post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
           }.to change(User, :count).by(0)
-          expect {
-            response.not_to be_successful
-            response.to have_http_status 400
-          } 
+          expect(response).not_to be_successful
+          expect(response).to have_http_status 400 
         end
       end
     end
   end
 
-  #describe "PATCH /update" do
-  #  context "with valid parameters" do
-  #    before do
-  #      old_info = '{ 
-  #                    display_name: "hoge",
-  #                    email: "hoge@gmail.com",
-  #                    password: "password", 
-  #                    password_confirmation: "password"
-  #                  }'
-
-  #                        display_name: "hoge",
-  #                        email: "hoge@gmail.com",
-  #                        old_password: "password", 
-  #                        password: 1234567890,
-  #                        password_confirmation: 1234567890
-  #                      }'
-  #      post users_path, params: old_info, as: :json, headers: { 'Content-Type' => 'application/json' }
-  #    end
-
-  #    it "updates the requested user" do
-  #      expect {
-  #        patch users_path/1, params: update_info, as: :json, headers: { 'Content-Type' => 'application/json' } 
-  #        user.reload
-  #      }
-  #    end
-  #  end
-
-  #end
+  describe "PATCH /update" do
+    context "with valid parameters" do
+      let(:user_id) {(session[:user_id].to_s).slice!(0,3)}
+      example "ユーザー情報が更新される" do
+        request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+        expect {
+          post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+        }.to change(User, :count).by(1)
+        
+        old_info = {
+                    display_name: "sample_user",
+                    email: "sample@gmail.com",
+                    password: "Passw0rd", 
+                    password_confirmation: "Passw0rd"
+                    }
+        new_info =  {
+                      display_name: "user1",
+                      email: "user1@gmail.com",
+                      old_password: "Passw0rd", 
+                      password: "Passw0rd1010",
+                      password_confirmation: "Passw0rd1010"
+                    }
+        target_path = "/users/" + user_id
+        expect {
+          patch target_path, params: new_info, as: :json, headers: { 'Content-Type' => 'application/json' }        
+        }.to change(User, :count).by(0) # ユーザーの数が変わっていないことを確認
+        expect(response).to be_successful
+        expect(response).to have_http_status 200
+      end
+    end
+    context "with invalid parameters" do
+      let(:user_id) {(session[:user_id].to_s).slice!(0,3)}
+      context "invalid old password" do
+        example "ユーザー情報が更新されない" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+          expect {
+            post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(1)
+            
+          old_info = {
+                      display_name: "sample_user",
+                      email: "sample@gmail.com",
+                      password: "Passw0rd", 
+                      password_confirmation: "Passw0rd"
+                      }
+          new_info =  {
+                        display_name: "user1",
+                        email: "user1@gmail.com",
+                        old_password: "Passw0rd_HOGEHOGE", 
+                        password: "Passw0rd1010",
+                        password_confirmation: "Passw0rd1010"
+                      }
+          target_path = "/users/" + user_id
+          expect {
+            patch target_path, params: new_info, as: :json, headers: { 'Content-Type' => 'application/json' }        
+          }.to change(User, :count).by(0) # ユーザーの数が変わっていないことを確認
+          expect(response).not_to be_successful
+          expect(response).to have_http_status 401
+       end
+      end
+      context "difference password_confirmation" do
+        example "ユーザー情報が更新されない" do
+          request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+          expect {
+            post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+          }.to change(User, :count).by(1)
+            
+          old_info = {
+                      display_name: "sample_user",
+                      email: "sample@gmail.com",
+                      password: "Passw0rd", 
+                      password_confirmation: "Passw0rd"
+                      }
+          new_info =  {
+                        display_name: "user1",
+                        email: "user1@gmail.com",
+                        old_password: "Passw0rd", 
+                        password: "Passw0rd1010",
+                        password_confirmation: "Passw0rd1010_HOGEHOGE"
+                      }
+          target_path = "/users/" + user_id
+          expect {
+            patch target_path, params: new_info, as: :json, headers: { 'Content-Type' => 'application/json' }        
+          }.to change(User, :count).by(0) # ユーザーの数が変わっていないことを確認
+          expect(response).not_to be_successful
+          expect(response).to have_http_status 400
+       end
+      end
+    end
+  end
 end

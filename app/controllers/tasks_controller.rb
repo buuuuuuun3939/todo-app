@@ -5,32 +5,42 @@ class TasksController < ApplicationController
 
   # GET /tasks or /tasks.json
   def index
-    @tasks = Task.all
+    if @tasks = Task.all
+      response.status = 200
+      render @tasks
+    else
+      response.status = 400
+      render json: {"message": "error message"}
+    end
   end
 
   # GET /tasks/1 or /tasks/1.json
   def show
-    @task = Task.find(params[:task_id])
-    render json: @task
+    if @task = Task.find(params[:task_id])
+      response.status = 200
+      render json: @task
+    else
+      response.status = 404
+      render json: {"message": "not found"} 
+    end
   end
 
   # POST /tasks or /tasks.json
   def create
-    # assignee_emailを基にusernのidを特定してassignee_idとする
+    # assignee_emailを基にuserのidを特定してassignee_idとする
     assignee_user = User.find_by(email: task_params[:assignee_email])
     #print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
     
-    @task = Task.new(name: task_params[:name],
+    if {@task = Task.new(name: task_params[:name],
                      description: task_params[:description],
                      deadline: task_params[:deadline],
                      completed: 0, # タスク生成時は必ず未完了状態である
                      user_id: 1,   # ここはsessionで得たidを入れる必要がある
                      assignee_id: assignee_user[:id],
                      public: task_params[:public]
-    )
-    @task.save
-
-    #print(@task[:id])
+    )}
+      @task.save
+    end
     @subtask = Subtask.new(task_id: @task[:id],
                            description: task_params[:description],
                            completed: 0 # サブタスク生成時は必ず未完了状態である 
@@ -67,15 +77,15 @@ class TasksController < ApplicationController
 
   # DELETE /tasks/1 or /tasks/1.json
   def destroy
-    @task = Task.find_by(params[:task_id])
-    @task.destroy # とりあえず削除できるけど、タスク作成者をきちんと確認する実装が必要
+    if @task = Task.find_by(params[:task_id])
+      @task.destroy # とりあえず削除できるけど、タスク作成者をきちんと確認する実装が必要
+    end
   end
 
   private
     # Only allow a list of trusted parameters through.
     def task_params
-      #params.fetch(:task, {})
-      params.permit(:task, :description, :name, :deadline, :assignee_email, :public, subtasks:[:description]) 
+      params.permit(:description, :name, :deadline, :assignee_email, :public, subtasks:[:description]) 
     end
     
      # beforeアクション

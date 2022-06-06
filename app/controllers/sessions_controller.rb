@@ -23,9 +23,9 @@ class SessionsController < ApplicationController
     #log_out if logged_in?
     
     if logged_in?
-      #print(session[:user_id])
-      response.status = 204
       log_out
+      response.status = 204
+      render json: {message: "success"}
     else
       print(session[:user_id])
       response.status = 401
@@ -36,7 +36,6 @@ class SessionsController < ApplicationController
   private
     # Only allow a list of trusted parameters through.
     def session_params
-      #params.permit(:email, :password, :id)
-      params.permit(:user_id, :email, :password)
+      params.permit(:email, :password)
     end
 end

@@ -5,10 +5,10 @@ class UsersController < ApplicationController
 
   # GET /users or /users.json
   def index
-    begin 
-      @users = User.all
+    if @users = User.all
+      response.status = 200
       render json: @users
-    rescue
+    else
       render json: {message: "get error."}
     end
   end
@@ -16,9 +16,8 @@ class UsersController < ApplicationController
   # POST /users or /users.json
   def create
     @user = User.new(user_params)
-    #binding.pry
     if @user.save # DBにuserを保存
-      #log_in(@user)
+      log_in(@user)
       response.status = 201
       render json: @user.display_name
     else
@@ -29,13 +28,19 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
-    if @user = User.find(params[:id]) 
-      # 本来はusersテーブル内のpassword_digestと、送られてきたold_passwordのハッシュが一致するかを確かめる
-      
-      if @user.password_digest == User.digest(update_user_params[:old_password])
-        if @user.update(update_user_params)
-          renderr json: {message: "update success."}
+    if @user = User.find(params[:id])
+      #binding.pry
+      if @user.authenticate(update_user_params[:old_password])
+        if @user.update(user_params)
+          response.status = 200
+          render json: {message: "update success."}
+        else
+          response.status = 400
+          render json: {message: "bad request"}
         end
+      else
+        response.status = 401
+        render json: {"message": "auth error"}
       end
     end
   end
@@ -45,9 +50,9 @@ class UsersController < ApplicationController
     def user_params
       params.permit(:display_name, :email, :password, :password_confirmation)
     end
-    #def update_user_params
-    #  params.require(:user).permit(:display_name, :email, :old_password, :password, :password_confirmation)
-    #end
+    def update_user_params
+      params.permit(:display_name, :email, :old_password, :password, :password_confirmation)
+    end
     
     # beforeアクション
     # ログイン済みユーザーかどうか確認
