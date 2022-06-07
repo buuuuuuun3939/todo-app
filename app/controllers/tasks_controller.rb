@@ -7,10 +7,10 @@ class TasksController < ApplicationController
   def index
     if @tasks = Task.all
       response.status = 200
-      render @tasks
+      render json: @tasks 
     else
       response.status = 400
-      render json: {"message": "error message"}
+      render json: {message: "error message"}
     end
   end
 
@@ -21,7 +21,7 @@ class TasksController < ApplicationController
       render json: @task
     else
       response.status = 404
-      render json: {"message": "not found"} 
+      render json: {message: "not found"} 
     end
   end
 
@@ -29,7 +29,7 @@ class TasksController < ApplicationController
   def create
     # assignee_emailを基にuserのidを特定してassignee_idとする
     assignee_user = User.find_by(email: task_params[:assignee_email])
-    print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
+    #print(assignee_user[:id]) # assignee_user[:id]で特定したuserのidが取れる
     
     @task = Task.new(name: task_params[:name],
                      description: task_params[:description],
@@ -40,15 +40,14 @@ class TasksController < ApplicationController
                      public: task_params[:public]
     )
     if @task.save
-      print(Task.last[:id])
+      @subtask =  Subtask.new(task_id: Task.last[:id],
+                              description: task_params[:description],
+                              completed: 0 # サブタスク生成時は必ず未完了状態である 
+      )
     end
-    @subtask =  Subtask.new(task_id: Task.last[:id],
-                            description: task_params[:description],
-                            completed: 0 # サブタスク生成時は必ず未完了状態である 
-    )
 
     if @subtask.save
-      binding.pry
+      #binding.pry
       response.status = 201
       render json: {message: "success message"}
     end
@@ -113,7 +112,8 @@ class TasksController < ApplicationController
     # beforeアクション 
     # 正しいユーザーかどうか確認
     def correct_user
-      @user = User.find(params[:id])
-      #redirect_to(root_url) unless current_user?(@user)
+      if !(@user = User.find(params[:id]))
+        render json: {message: "auth error message"}
+      end
     end
 end

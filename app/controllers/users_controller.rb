@@ -3,10 +3,23 @@ class UsersController < ApplicationController
   before_action :correct_user,   only: [:update]
   protect_from_forgery :except => [:create]
 
+  #json.extract! user, :id, :created_at, :updated_at
+  #json.url user_url(user, format: :json)
+  #json.partial! "users/user", user: @user
+  #json.array! @users, partial: "users/user", as: :user
+
+
   # GET /users or /users.json
   def index
     if @users = User.all
       response.status = 200
+      #render "index", formats: "json", handlers: "jbuilder"
+      #render @users
+      #format.json
+      #respond_to do |format|
+      #  format.json
+      #end
+      #render 'index'
       render json: @users
     else
       render json: {message: "get error."}

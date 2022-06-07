@@ -287,7 +287,7 @@ DEPENDENCIES
   faker
   fuubar
   importmap-rails
-  jbuilder
+  jbuilder (~> 2.11.0)
   mysql2 (~> 0.5)
   pry-rails
   puma (~> 5.0)

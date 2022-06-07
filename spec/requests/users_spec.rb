@@ -17,17 +17,16 @@ RSpec.describe "/users", type: :request do
   # ok
   describe "GET #index" do
     example "200が返却される" do
-      get users_path
-      expect(response).to be_successful
-      expect(response).to have_http_status 200
-    end
-  end
+      request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
 
-  # ログイン後かをテストする必要がある
-  describe "GET #show" do
-    let(:id) {1}
-    example "200が返却される" do
-      get users_path(id)
+      expect {
+        post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+      }.to change(User, :count).by(1)
+      expect(response).to be_successful
+      expect(response).to have_http_status 201
+      expect(session[:user_id]).not_to eq nil
+      
+      get users_path
       expect(response).to be_successful
       expect(response).to have_http_status 200
     end

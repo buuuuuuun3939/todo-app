@@ -19,21 +19,46 @@ RSpec.describe "/tasks", type: :request do
   # adjust the attributes here as well.
 
   # ok
-  #describe "GET #index" do
-  #  it "renders a successful response" do
-  #    get tasks_url
-  #    expect(response).to be_successful
-  #  end
-  #end
+  describe "GET #index" do  
+    it "renders a successful response" do
+      request_body = {display_name: "sample_user", email: "sample@gmail.com", password: "Passw0rd", password_confirmation: "Passw0rd"}
+      expect {
+        post users_path, params: request_body, as: :json, headers: { 'Content-Type' => 'application/json' }
+      }.to change(User, :count).by(1)
+      expect(response).to be_successful
+      expect(response).to have_http_status 201
+      expect(session[:user_id]).not_to eq nil
+
+      task = { name: "sample_task",
+               description: "sample",
+               deadline: "2022-07-31",
+               assignee_email: "sample@gmail.com", # 今回はタスク作成者が担当者
+               public: true,
+               subtasks: {
+                 description: "sample_subtask"
+              }
+      }
+      expect {
+        post tasks_path, params: task, as: :json, headers: { 'Content-Type' => 'application/json' }
+      }.to change(Task, :count).by(1)
+      expect(response).to be_successful
+      expect(response).to have_http_status 201
+      
+      get tasks_path
+      expect(response).to be_successful
+      expect(response).to have_http_status 200
+    end
+  end
 
   #ok
-  #describe "GET #show" do
-  #  let(:task_id) {1}
-  #  it "renders a successful response" do
-  #    get tasks_url(task_id)
-  #    expect(response).to be_successful
-  #  end
-  #end
+  describe "GET #show" do
+    let(:task_id) {1}
+    it "renders a successful response" do
+      get tasks_path(task_id)
+      expect(response).to be_successful
+      expect(response).to have_http_status 200
+    end
+  end
 
   #describe "GET /new" do
   #  it "renders a successful response" do

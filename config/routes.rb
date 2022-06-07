@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resources :subtasks
-  #resources :tasks
+  resources :tasks
   #resources :sessions
   resources :users
 
@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   delete "/auth", to: "sessions#destroy"
   
   # task
-  post   "/tasks", to: "tasks#create"
-  patch  "/tasks/:id", to: "tasks#update"
+  #get    "/"
+  #post   "/tasks", to: "tasks#create"
+  #patch  "/tasks/:id", to: "tasks#update"
 end

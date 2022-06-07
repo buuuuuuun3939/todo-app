@@ -23,7 +23,6 @@ class SessionsController < ApplicationController
       response.status = 204
       render json: {message: "success"}
     else
-      print(session[:user_id])
       response.status = 401
       render json: {message: "session destroy error"}
     end
