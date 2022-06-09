@@ -41,5 +41,6 @@
 	// "remoteUser": "vscode"
 
 	// add
-	"addPort": ["3000:3000", "3306:3306"]
+	"addPort": ["3000:3000", "3306:3306"],
+	"features": {}
 }

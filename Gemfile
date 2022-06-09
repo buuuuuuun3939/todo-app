@@ -65,6 +65,7 @@ group :development, :test do
   gem "faker"
   gem "devise"
   gem "rack_session_access"
+  gem 'rack-cors'
 end
 
 group :development do

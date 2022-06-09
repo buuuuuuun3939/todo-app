@@ -20,7 +20,7 @@ class UsersController < ApplicationController
       #  format.json
       #end
       #render 'index'
-      render json: @users
+      render json: @users#, headers: { 'Access-Control-Allow-Origin' => '*' }
     else
       render json: {message: "get error."}
     end
@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     if @user.save # DBにuserを保存
       log_in(@user)
       response.status = 201
-      render json: @user.display_name
+      render json: @user.display_name, headers: { 'Access-Control-Allow-Origin' => '*' }
     else
       response.status = 400
       render json: {message: "save error."}

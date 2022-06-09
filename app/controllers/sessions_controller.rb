@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
     if user && user.authenticate(session_params[:password])
       log_in user
       response.status = 201
-      render json: user.display_name
+      render json: user.display_name, headers: { 'Access-Control-Allow-Origin' => '*' }
     else
       response.status = 400
       render json: {message: "Bad request"}
@@ -21,7 +21,7 @@ class SessionsController < ApplicationController
     if logged_in?
       log_out
       response.status = 204
-      render json: {message: "success"}
+      render json: {message: "success"}, headers: { 'Access-Control-Allow-Origin' => '*' }
     else
       response.status = 401
       render json: {message: "session destroy error"}

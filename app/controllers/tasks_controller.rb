@@ -7,7 +7,7 @@ class TasksController < ApplicationController
   def index
     if @tasks = Task.all
       response.status = 200
-      render json: @tasks 
+      render json: @tasks, headers: { 'Access-Control-Allow-Origin' => '*' }
     else
       response.status = 400
       render json: {message: "error message"}
